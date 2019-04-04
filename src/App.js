@@ -101,8 +101,6 @@ class App extends Component {
 	const m = maxR * 1.1;
 	const step = 0.01;
 
-	const { openSimplex } = this.state;
-
 	const p = phase;
 	
 	ctx.beginPath();
