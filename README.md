@@ -1,3 +1,3 @@
-# Pixel Fire Demo
+# Line Demo
 
-[https://bengosney.github.io/pixelcanvasdemos/](https://bengosney.github.io/pixelcanvasdemos/)
+[https://bengosney.github.io/lines/](https://bengosney.github.io/lines/)

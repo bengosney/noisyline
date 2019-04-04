@@ -1,8 +1,8 @@
 {
-  "name": "fire",
+  "name": "lines",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://bengosney.github.io/pixelcanvasdemos/",
+  "homepage": "https://bengosney.github.io/lines/",
   "dependencies": {
     "open-simplex-noise": "^1.6.0",
     "react": "^16.8.4",
