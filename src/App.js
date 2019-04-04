@@ -49,16 +49,17 @@ class App extends Component {
 	this.ts = this.getTS();
 	this.clearFrame();
 
-	const count = 1;
+	const count = 10;
 	
 	for (let i = 0 ; i < count ; i++) { 
 	    this.drawCircle(i, count);
 	}
-	
+		
 	this.nextFrame();
     }
 
     nextFrame() {
+	//this.setState({ phase: this.state.phase + 0.01 });
 	this.rAF = requestAnimationFrame(() => this.updateAnimationState());
     }
 
@@ -87,7 +88,7 @@ class App extends Component {
 	return date.getTime();
     }
 
-    convertRange( value, r1, r2 ) { 
+    scale( value, r1, r2 ) { 
 	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
     }
     
@@ -98,20 +99,21 @@ class App extends Component {
 	const maxR = Math.min(width, height) / 3;
 	const minR = maxR / 1.1;
 	const m = maxR * 1.1;
-	const step = 0.001;
+	const step = 0.01;
 
 	const { openSimplex } = this.state;
-	//const random = openSimplex.noise2D(x, y);
+
+	const p = phase;
 	
 	ctx.beginPath();
-	const colour = 255 - (Math.floor(255 / count) * n);
-	ctx.strokeStyle = `rgb(${colour}, ${colour}, ${colour})`;
+	const colour = 255;
+	ctx.strokeStyle = `rgba(${colour}, ${colour}, ${colour}, .8)`;
 
-	const scaled = [0, 10];
+	const scaled = [0, n];
 	
 	for (let a = 0 ; a <= TWO_PI; a += step) {
-	    const noiseX = this.convertRange(Math.cos(a + phase), [-1, 1], scaled);
-	    const noiseY = this.convertRange(Math.sin(a + phase), [-1, 1], scaled);
+	    const noiseX = this.scale(Math.cos(a + p), [-1, 1], scaled);
+	    const noiseY = this.scale(Math.sin(a + p), [-1, 1], scaled);
 	    
 	    const r = this.randomXY(minR, maxR, noiseX, noiseY);
 	    
@@ -123,12 +125,10 @@ class App extends Component {
 
 	ctx.closePath();
 	ctx.stroke();
-
-	this.setState({ phase: phase + 0.01 });
     }
     
     render() {
-	const { width, height, openSimplex } = this.state;
+	const { width, height } = this.state;
 
         return (
 	    <div>
