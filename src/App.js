@@ -11,7 +11,8 @@ class App extends Component {
 	    pixelSize: 8,
 	    height: 500,
 	    width: 150,
-	    openSimplex: new OpenSimplexNoise(Date.now())
+	    openSimplex: new OpenSimplexNoise(Date.now()),
+	    phase: 0
 	};
 	
 	this.drawing = false;
@@ -48,13 +49,13 @@ class App extends Component {
 	this.ts = this.getTS();
 	this.clearFrame();
 
-	const count = 10;
+	const count = 1;
 	
 	for (let i = 0 ; i < count ; i++) { 
 	    this.drawCircle(i, count);
 	}
 	
-	//this.nextFrame();
+	this.nextFrame();
     }
 
     nextFrame() {
@@ -86,48 +87,53 @@ class App extends Component {
 	return date.getTime();
     }
 
+    convertRange( value, r1, r2 ) { 
+	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
+    }
     
     drawCircle(n, count) {
 	const { ctx } = this;
-	const { width, height } = this.state;
+	const { width, height, phase } = this.state;
 	const TWO_PI = Math.PI * 2;
 	const maxR = Math.min(width, height) / 3;
 	const minR = maxR / 1.1;
 	const m = maxR * 1.1;
 	const step = 0.001;
+
+	const { openSimplex } = this.state;
+	//const random = openSimplex.noise2D(x, y);
 	
 	ctx.beginPath();
 	const colour = 255 - (Math.floor(255 / count) * n);
 	ctx.strokeStyle = `rgb(${colour}, ${colour}, ${colour})`;
-	const s = 1;
-	//const n = Math.floor(((this.ts - this.startts) / s)) * s;
-	const b = 3;
+
+	const scaled = [0, 10];
 	
 	for (let a = 0 ; a <= TWO_PI; a += step) {
-	    const noiseX = Math.cos(a + n) * b;
-	    const noiseY = Math.sin(a + n) * b;
+	    const noiseX = this.convertRange(Math.cos(a + phase), [-1, 1], scaled);
+	    const noiseY = this.convertRange(Math.sin(a + phase), [-1, 1], scaled);
 	    
-	    const r = this.randomXY(minR, maxR, noiseX, noiseY);				    
+	    const r = this.randomXY(minR, maxR, noiseX, noiseY);
 	    
-	    const x = r * Math.cos(a) + m;
-	    const y = r * Math.sin(a) + m;	   
+	    const x = r * Math.sin(a) + m;
+	    const y = r * Math.cos(a) + m;	   
 	    
 	    ctx.lineTo(x, y);
 	}
 
 	ctx.closePath();
 	ctx.stroke();
+
+	this.setState({ phase: phase + 0.01 });
     }
     
     render() {
 	const { width, height, openSimplex } = this.state;
 
-	const val = openSimplex.noise2D(1, 1) + 1;
-        
         return (
 	    <div>
               <div>
-		<canvas ref="canvas" width={ width } height={ height } onClick={ () => this.nextFrame() } />
+		<canvas ref="canvas" width={ width } height={ height } onClick={ () => this.setState({ openSimplex: new OpenSimplexNoise(Date.now()) }) } />
               </div>
             </div>
 	);	
