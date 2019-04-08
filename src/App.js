@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import OpenSimplexNoise from 'open-simplex-noise';
 
+import Noise from './Noise';
 
 class App extends Component {
     constructor(props) {
@@ -11,13 +12,14 @@ class App extends Component {
 	    pixelSize: 8,
 	    height: 500,
 	    width: 150,
-	    openSimplex: new OpenSimplexNoise(Date.now()),
-	    phase: 0
+	    lenth: 100,
+	    range: 20,
+	    noise: new Noise(100),
+	    yOffset: null
 	};
 	
 	this.drawing = false;
 	this.ctx = null;
-
 
 	this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	this.startts = this.getTS();
@@ -36,8 +38,12 @@ class App extends Component {
     
     updateWindowDimensions() {
 	const { innerWidth, innerHeight } = window;
+	const { range } = this.state;
+
+	const length = Math.floor(innerWidth / 4);
+	const noise = new Noise(length, [-range, range]);
 	
-	this.setState({ width: innerWidth, height: innerHeight });
+	this.setState({ width: innerWidth, height: innerHeight, noise: noise, length: length });
     }
     
     componentWillUnmount() {
@@ -49,17 +55,12 @@ class App extends Component {
 	this.ts = this.getTS();
 	this.clearFrame();
 
-	const count = 10;
-	
-	for (let i = 0 ; i < count ; i++) { 
-	    this.drawCircle(i, count);
-	}
+	this.drawLine();
 		
 	this.nextFrame();
     }
 
     nextFrame() {
-	//this.setState({ phase: this.state.phase + 0.01 });
 	this.rAF = requestAnimationFrame(() => this.updateAnimationState());
     }
 
@@ -69,17 +70,6 @@ class App extends Component {
 
 	ctx.fillStyle = "#000000";
 	ctx.fillRect(0, 0, width, height);
-    }
-
-    random(min, max) {
-	return Math.floor(Math.random()*(max-min+1)+min);
-    }
-
-    randomXY(min, max, x, y) {
-	const { openSimplex } = this.state;
-	const random = openSimplex.noise2D(x, y);
-
-	return Math.floor(random*(max-min+1)+min);
     }
 
     getTS() {
@@ -92,36 +82,31 @@ class App extends Component {
 	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
     }
     
-    drawCircle(n, count) {
+    drawLine() {
 	const { ctx } = this;
-	const { width, height, phase } = this.state;
-	const TWO_PI = Math.PI * 2;
-	const maxR = Math.min(width, height) / 3;
-	const minR = maxR / 1.1;
-	const m = maxR * 1.1;
-	const step = 0.01;
+	const { width, height, noise } = this.state;
+	const y = Math.floor(height / 2);
 
-	const p = phase;
-	
+	const xOffset = Math.floor(width / 4);
+	const step = Math.floor(width / 2);
+
 	ctx.beginPath();
 	const colour = 255;
-	ctx.strokeStyle = `rgba(${colour}, ${colour}, ${colour}, .8)`;
+	ctx.strokeStyle = `rgba(${colour}, ${colour}, ${colour}, 1)`;
 
-	const scaled = [0, n];
-	
-	for (let a = 0 ; a <= TWO_PI; a += step) {
-	    const noiseX = this.scale(Math.cos(a + p), [-1, 1], scaled);
-	    const noiseY = this.scale(Math.sin(a + p), [-1, 1], scaled);
-	    
-	    const r = this.randomXY(minR, maxR, noiseX, noiseY);
-	    
-	    const x = r * Math.sin(a) + m;
-	    const y = r * Math.cos(a) + m;	   
-	    
-	    ctx.lineTo(x, y);
+	let yOffset = null;
+	//noise.reset();
+
+	for (let x = 0 ; x < width; x++) {
+	    if (x > xOffset && x < (xOffset * 3)) {
+		const n = noise.get();
+		yOffset = yOffset || n;
+		ctx.lineTo(x, (y + n) - yOffset);
+	    } else {
+		ctx.lineTo(x, y);
+	    }
 	}
 
-	ctx.closePath();
 	ctx.stroke();
     }
     
@@ -131,7 +116,7 @@ class App extends Component {
         return (
 	    <div>
               <div>
-		<canvas ref="canvas" width={ width } height={ height } onClick={ () => this.setState({ openSimplex: new OpenSimplexNoise(Date.now()) }) } />
+		<canvas ref="canvas" width={ width } height={ height } />
               </div>
             </div>
 	);	
