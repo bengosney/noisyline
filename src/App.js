@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import OpenSimplexNoise from 'open-simplex-noise';
 
 import Noise from './Noise';
 
@@ -88,15 +87,14 @@ class App extends Component {
 	const y = Math.floor(height / 2);
 
 	const xOffset = Math.floor(width / 4);
-	const step = Math.floor(width / 2);
 
 	ctx.beginPath();
 	const colour = 255;
 	ctx.strokeStyle = `rgba(${colour}, ${colour}, ${colour}, 1)`;
 
 	let yOffset = null;
-	//noise.reset();
-
+	noise.reset();
+	
 	for (let x = 0 ; x < width; x++) {
 	    if (x > xOffset && x < (xOffset * 3)) {
 		const n = noise.get();

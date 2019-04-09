@@ -7,19 +7,44 @@ class Noise {
 	this.a = 0;
 	this.range = range;
 	this.r = radius;
+	this.start = 0;
+	
+	this.findStart();
+	this.reset();
     }
 
     scale( value, r1, r2 ) { 
-	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
+	return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
     }
 
     reset() {
-	this.a = 0;
+	this.a = this.start;
+    }
+
+    step() {
+	return Math.PI / this.length;
+    }
+
+    findStart() {
+	let prev = this.get();
+	let prevDiff = Number.MAX_SAFE_INTEGER;
+
+	while (true) {
+	    const cur = this.get();
+	    const diff = Math.abs(prev - cur);
+	    
+	    if (diff > prevDiff) {
+		this.start = this.a  - (this.step() * 2);
+		break;
+	    }
+
+	    prevDiff = diff;
+	    prev = cur;
+	}
     }
 
     get() {
-	const TWO_PI = Math.PI * 2;
-	const step = Math.PI / this.length;
+	const step = this.step();
 	
 	const { r, a } = this;
 	const x = r * Math.cos(a);
