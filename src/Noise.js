@@ -36,7 +36,6 @@ class Noise {
 
     findStart() {
 	let prev = this.get();
-	let prevDiff = Number.MAX_SAFE_INTEGER;
 
 	let smallestAngle = Number.MAX_SAFE_INTEGER;
 	let bestStart = 0;
