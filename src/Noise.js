@@ -25,22 +25,35 @@ class Noise {
 	return Math.PI / this.length;
     }
 
+    angle(y1, y2) {
+	const y = y1 - y2;
+	const x = 10;
+	let theta = Math.atan2(y, x);
+	theta *= 180 / Math.PI;
+
+	return theta;
+    }
+
     findStart() {
 	let prev = this.get();
 	let prevDiff = Number.MAX_SAFE_INTEGER;
 
-	while (true) {
+	let smallestAngle = Number.MAX_SAFE_INTEGER;
+	let bestStart = 0;
+
+	for (let i = 0 ; i < this.length ; i++) {
 	    const cur = this.get();
-	    const diff = Math.abs(prev - cur);
-	    
-	    if (diff > prevDiff) {
-		this.start = this.a  - (this.step() * 2);
-		break;
+	    const angle = Math.abs(this.angle(prev, cur));
+
+	    if (angle < smallestAngle) {
+		smallestAngle = angle;
+		bestStart = this.a  - (this.step() * 2);
 	    }
 
-	    prevDiff = diff;
 	    prev = cur;
 	}
+
+	this.start = bestStart;
     }
 
     get() {
