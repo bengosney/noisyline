@@ -22,7 +22,7 @@ class Noise {
     }
 
     step() {
-	return Math.PI / this.length;
+	return (Math.PI * 2) / this.length;
     }
 
     angle(y1, y2) {
