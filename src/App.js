@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 import Noise from './Noise';
+import noisyLine from './noisyLine';
 
 class App extends Component {
     constructor(props) {
@@ -56,7 +57,7 @@ class App extends Component {
 
 	this.drawLine();
 		
-	this.nextFrame();
+//	this.nextFrame();
     }
 
     nextFrame() {
@@ -88,24 +89,22 @@ class App extends Component {
 
 	const xOffset = Math.floor(width / 4);
 
-	ctx.beginPath();
-	const colour = 255;
-	ctx.strokeStyle = `rgba(${colour}, ${colour}, ${colour}, 1)`;
-
-	let yOffset = null;
-	noise.reset();
+	const line = new noisyLine(xOffset, y, xOffset * 3, y, ctx);
+	line.draw();
 	
-	for (let x = 0 ; x < width; x++) {
-	    if (x > xOffset && x < (xOffset * 3)) {
-		const n = noise.get();
-		yOffset = yOffset || n;
-		ctx.lineTo(x, (y + n) - yOffset);
-	    } else {
-		ctx.lineTo(x, y);
-	    }
-	}
-
+	ctx.beginPath();
+	ctx.moveTo(0, y);
+	ctx.strokeStyle = `#ffffff`;
+	ctx.lineTo(xOffset, y);
 	ctx.stroke();
+	ctx.closePath();
+
+	ctx.beginPath();
+	ctx.moveTo(xOffset * 3, y);
+	ctx.strokeStyle = `#ffffff`;
+	ctx.lineTo(xOffset * 4, y);
+	ctx.stroke();
+	ctx.closePath();
     }
     
     render() {
