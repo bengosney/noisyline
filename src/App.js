@@ -43,7 +43,7 @@ class App extends Component {
 	const length = Math.floor(innerWidth / 2);
 	const noise = new Noise(length, [-range, range]);
 	
-	this.setState({ width: innerWidth, height: innerHeight, noise: noise, length: length });
+	this.setState({ width: innerWidth, height: innerHeight, noise: noise, length: length }, () => this.nextFrame());
     }
     
     componentWillUnmount() {
