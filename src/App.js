@@ -4,6 +4,8 @@ import './App.css';
 import Noise from './Noise';
 import noisyLine from './noisyLine';
 
+import Context from './Context';
+
 class App extends Component {
     constructor(props) {
 	super(props);
@@ -14,12 +16,12 @@ class App extends Component {
 	    width: 150,
 	    lenth: 100,
 	    range: 20,
-	    noise: new Noise(100),
-	    yOffset: null
+	    yOffset: null	    
 	};
 	
 	this.drawing = false;
 	this.ctx = null;
+	this.line = 
 
 	this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	this.startts = this.getTS();
@@ -28,7 +30,7 @@ class App extends Component {
     
     componentDidMount() {
 	const canvas = this.refs.canvas;
-	this.ctx = canvas.getContext("2d");
+	Context.set(canvas.getContext("2d"));
 
 	
 	this.rAF = requestAnimationFrame(() => this.updateAnimationState());
@@ -57,7 +59,7 @@ class App extends Component {
 
 	this.drawLine();
 		
-//	this.nextFrame();
+	//this.nextFrame();
     }
 
     nextFrame() {
@@ -66,7 +68,7 @@ class App extends Component {
 
     clearFrame() {
 	const { width, height } = this.state;
-	const { ctx } = this;
+	const ctx = Context.get();
 
 	ctx.fillStyle = "#000000";
 	ctx.fillRect(0, 0, width, height);
@@ -83,28 +85,12 @@ class App extends Component {
     }
     
     drawLine() {
-	const { ctx } = this;
+	const ctx = Context.get();
 	const { width, height, noise } = this.state;
 	const y = Math.floor(height / 2);
 
-	const xOffset = Math.floor(width / 4);
-
-	const line = new noisyLine(xOffset, y, xOffset * 3, y, ctx);
-	line.draw();
-	
-	ctx.beginPath();
-	ctx.moveTo(0, y);
-	ctx.strokeStyle = `#ffffff`;
-	ctx.lineTo(xOffset, y);
-	ctx.stroke();
-	ctx.closePath();
-
-	ctx.beginPath();
-	ctx.moveTo(xOffset * 3, y);
-	ctx.strokeStyle = `#ffffff`;
-	ctx.lineTo(xOffset * 4, y);
-	ctx.stroke();
-	ctx.closePath();
+	const line = new noisyLine(0, y, width, y, 50, 1);
+	line.draw();	
     }
     
     render() {

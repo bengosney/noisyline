@@ -1,21 +1,29 @@
 import Noise from './Noise';
+import Context from './Context';
 
 class noisyLine {
-    constructor(x1, y1, x2, y2, ctx = null) {
-	this.ctx = ctx;
+    constructor(x1, y1, x2, y2, a = 100, f = 2) {
+	const x = x1 - x2;
+	const y = y1 - y2;
 
-	const a = x1 - x2;
-	const b = y1 - y2;
-
-	this.length = Math.abs(Math.sqrt( a*a + b*b ));
+	this.length = Math.abs(Math.sqrt( x*x + y*y ));
 	this.angle = this.getAngle(x1, y1, x2, y2);
 
-	this.noise = new Noise(this.length);
+	this.noise = new Noise(this.length, [0, a], f);
+	//this.
 
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2;
 	this.y2 = y2;
+    }
+
+    setAmplitude(amplitude) {
+	this.noise.setRange([0, amplitude]);
+    }
+
+    setFrequency(frequency) {
+	this.noise.setRadius(frequency);
     }
 
     getAngle(x1, y1, x2, y2) {
@@ -38,15 +46,15 @@ class noisyLine {
     }
     
     draw() {
-	const { ctx, noise } = this;
-	const { x1, y1, x2, y2 } = this;
+	const ctx = Context.get();
+	const { noise, x1, y1, x2, y2 } = this;
 	const y = y1;
 
 	const xOffset = Math.floor((x2 - x1) / 4);
 
 	ctx.beginPath();
-	const colour = 255;
-	ctx.strokeStyle = `#ffffff`;
+
+	ctx.strokeStyle = '#ffffff';
 
 	let yOffset = null;
 	noise.reset();
@@ -63,8 +71,7 @@ class noisyLine {
 	}
 
 	ctx.stroke();
-	ctx.closePath();
-    
+	ctx.closePath();    
     }
 }
 
