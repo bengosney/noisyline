@@ -1,10 +1,10 @@
 class Context {
     static get() {
-	return this.ctx;
+        return this.ctx;
     }
 
     static set(ctx) {
-	this.ctx = ctx;
+        this.ctx = ctx;
     }
 }
 
